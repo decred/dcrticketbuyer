@@ -44,23 +44,26 @@ var (
 type purchaseManager struct {
 	purchaser          *ticketPurchaser
 	blockConnectedChan chan int64
+	balanceChan        chan struct{}
 	quit               chan struct{}
 }
 
 // newPurchaseManager creates a new purchaseManager.
 func newPurchaseManager(purchaser *ticketPurchaser,
 	blockConnChan chan int64,
+	balanceChan chan struct{},
 	quit chan struct{}) *purchaseManager {
 	return &purchaseManager{
 		purchaser:          purchaser,
 		blockConnectedChan: blockConnChan,
+		balanceChan:        balanceChan,
 		quit:               quit,
 	}
 }
 
-// blockConnectedHandler handles block connected notifications, which trigger
-// ticket purchases.
-func (p *purchaseManager) blockConnectedHandler() {
+// purchaseHandler handles ticket purchases which can be triggered either
+// by block connected or account balance updated notifications.
+func (p *purchaseManager) purchaseHandler() {
 out:
 	for {
 		select {
@@ -68,6 +71,12 @@ out:
 			daemonLog.Infof("Block height %v connected", height)
 			atomic.StoreInt64(&glChainHeight, height)
 			err := p.purchaser.purchase(height)
+			if err != nil {
+				log.Errorf("Failed to purchase tickets this round: %s",
+					err.Error())
+			}
+		case <-p.balanceChan:
+			err := p.purchaser.purchase(atomic.LoadInt64(&glChainHeight))
 			if err != nil {
 				log.Errorf("Failed to purchase tickets this round: %s",
 					err.Error())
