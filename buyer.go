@@ -145,7 +145,7 @@ func newTicketPurchaser(cfg *config,
 	case useDualPriceStr:
 		priceMode = AvgPriceDualMode
 	}
-	heightCheck := make(map[int64]struct{})
+
 	return &ticketPurchaser{
 		cfg:              cfg,
 		dcrdChainSvr:     dcrdChainSvr,
@@ -157,7 +157,7 @@ func newTicketPurchaser(cfg *config,
 		maintainMinPrice: maintainMinPrice,
 		useMedian:        cfg.FeeSource == useMedianStr,
 		priceMode:        priceMode,
-		heightCheck:      heightCheck,
+		heightCheck:      make(map[int64]struct{}),
 	}, nil
 }
 
