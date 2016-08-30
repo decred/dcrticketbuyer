@@ -168,8 +168,9 @@ func (t *ticketPurchaser) purchase(height int64) error {
 	// Check to make sure that the current height has not already been seen
 	// for a reorg or a fork
 	if _, exists := t.heightCheck[height]; exists {
-		return fmt.Errorf("We've already seen this height, "+
+		log.Tracef("We've already seen this height, "+
 			"reorg/fork detected at height %v", height)
+		return nil
 	}
 	t.heightCheck[height] = struct{}{}
 
