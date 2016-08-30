@@ -104,6 +104,7 @@ type ticketPurchaser struct {
 	maintainMinPrice    bool         // Flag for minimum price manipulation
 	useMedian           bool         // Flag for using median for ticket fees
 	priceMode           avgPriceMode // Price mode to use to calc average price
+	heightCheck         map[int64]struct{}
 }
 
 // newTicketPurchaser creates a new ticketPurchaser.
@@ -144,7 +145,7 @@ func newTicketPurchaser(cfg *config,
 	case useDualPriceStr:
 		priceMode = AvgPriceDualMode
 	}
-
+	heightCheck := make(map[int64]struct{})
 	return &ticketPurchaser{
 		cfg:              cfg,
 		dcrdChainSvr:     dcrdChainSvr,
@@ -156,12 +157,22 @@ func newTicketPurchaser(cfg *config,
 		maintainMinPrice: maintainMinPrice,
 		useMedian:        cfg.FeeSource == useMedianStr,
 		priceMode:        priceMode,
+		heightCheck:      heightCheck,
 	}, nil
 }
 
 // purchase is the main handler for purchasing tickets for the user.
 // TODO Not make this an inlined pile of crap.
 func (t *ticketPurchaser) purchase(height int64) error {
+
+	// Check to make sure that the current height has not already been seen
+	// for a reorg or a fork
+	if _, exists := t.heightCheck[height]; exists {
+		return fmt.Errorf("We've already seen this height, "+
+			"reorg/fork detected at height %v", height)
+	}
+	t.heightCheck[height] = struct{}{}
+
 	// Initialize webserver update data. If the webserver is
 	// enabled, defer a function that writes this data to the
 	// disk.
