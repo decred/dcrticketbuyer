@@ -371,6 +371,16 @@ func (t *ticketPurchaser) purchase(height int64) error {
 		curPrice := nextStakeDiff
 		couldBuy := math.Floor(balSpendable.ToCoin() / nextStakeDiff.ToCoin())
 
+		// Calculate the total tickets that could possibly be
+		// bought in the remaining winow. If couldBuy is greater than
+		// possible amount than reduce to possible
+		ticketsLeftInWindow := (winSize - int64(t.idxDiffPeriod)) * int64(20)
+		if couldBuy > float64(ticketsLeftInWindow) {
+			log.Debugf("The total ticket allotment left in this stakediff window is %v. "+
+				"So this wallet's possible tickets that could be bought is %v so it has been "+
+				"reduced to %v.", ticketsLeftInWindow, couldBuy, ticketsLeftInWindow)
+			couldBuy = float64(ticketsLeftInWindow)
+		}
 		// Override the target price being the average price if
 		// the user has elected to attempt to modify the ticket
 		// price.
