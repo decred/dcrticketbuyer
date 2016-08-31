@@ -371,9 +371,9 @@ func (t *ticketPurchaser) purchase(height int64) error {
 		curPrice := nextStakeDiff
 		couldBuy := math.Floor(balSpendable.ToCoin() / nextStakeDiff.ToCoin())
 
-		// Calculate the total tickets that could possibly be
-		// bought in the remaining winow. If couldBuy is greater than
-		// possible amount than reduce to possible
+		// Calculate the remaining tickets that could possibly be
+		// mined in the current window. If couldBuy is greater than
+		// possible amount than reduce to that amount
 		ticketsLeftInWindow := (winSize - int64(t.idxDiffPeriod)) *
 			int64(activeNet.MaxFreshStakePerBlock)
 		if couldBuy > float64(ticketsLeftInWindow) {
@@ -382,6 +382,7 @@ func (t *ticketPurchaser) purchase(height int64) error {
 				"reduced to %v.", ticketsLeftInWindow, couldBuy, ticketsLeftInWindow)
 			couldBuy = float64(ticketsLeftInWindow)
 		}
+
 		// Override the target price being the average price if
 		// the user has elected to attempt to modify the ticket
 		// price.
