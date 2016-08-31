@@ -378,8 +378,9 @@ func (t *ticketPurchaser) purchase(height int64) error {
 			int64(activeNet.MaxFreshStakePerBlock)
 		if couldBuy > float64(ticketsLeftInWindow) {
 			log.Debugf("The total ticket allotment left in this stakediff window is %v. "+
-				"So this wallet's possible tickets that could be bought is %v so it has been "+
-				"reduced to %v.", ticketsLeftInWindow, couldBuy, ticketsLeftInWindow)
+				"So this wallet's possible tickets that could be bought is %v so it"+
+				" has been reduced to %v.",
+				ticketsLeftInWindow, couldBuy, ticketsLeftInWindow)
 			couldBuy = float64(ticketsLeftInWindow)
 		}
 
