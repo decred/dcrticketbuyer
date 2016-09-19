@@ -439,31 +439,22 @@ func (t *ticketPurchaser) purchase(height int64) error {
 		// at this difficulty.
 		curPrice := nextStakeDiff
 		couldBuy := math.Floor(balSpendable.ToCoin() / nextStakeDiff.ToCoin())
-
+		diffPeriod := int64(0)
 		// Calculate the remaining tickets that could possibly be
 		// mined in the current window. If couldBuy is greater than
 		// possible amount than reduce to that amount
 		if (height+1)%winSize != 0 {
 			// In the middle of a window
-			ticketsLeftInWindow := (winSize - int64(t.idxDiffPeriod)) *
-				int64(activeNet.MaxFreshStakePerBlock)
-			if couldBuy > float64(ticketsLeftInWindow) {
-				log.Debugf("The total ticket allotment left in this stakediff window is %v. "+
-					"So this wallet's possible tickets that could be bought is %v so it"+
-					" has been reduced to %v.",
-					ticketsLeftInWindow, couldBuy, ticketsLeftInWindow)
-				couldBuy = float64(ticketsLeftInWindow)
-			}
-		} else {
-			// At the start of a new window
-			ticketsLeftInWindow := winSize * int64(activeNet.MaxFreshStakePerBlock)
-			if couldBuy > float64(ticketsLeftInWindow) {
-				log.Debugf("The total ticket allotment left in this stakediff window is %v. "+
-					"So this wallet's possible tickets that could be bought is %v so it"+
-					" has been reduced to %v. %v %v %v",
-					ticketsLeftInWindow, couldBuy, ticketsLeftInWindow)
-				couldBuy = float64(ticketsLeftInWindow)
-			}
+			diffPeriod = int64(t.idxDiffPeriod)
+		}
+		ticketsLeftInWindow := (winSize - diffPeriod) *
+			int64(activeNet.MaxFreshStakePerBlock)
+		if couldBuy > float64(ticketsLeftInWindow) {
+			log.Debugf("The total ticket allotment left in this stakediff window is %v. "+
+				"So this wallet's possible tickets that could be bought is %v so it"+
+				" has been reduced to %v.",
+				ticketsLeftInWindow, couldBuy, ticketsLeftInWindow)
+			couldBuy = float64(ticketsLeftInWindow)
 		}
 		// Override the target price being the average price if
 		// the user has elected to attempt to modify the ticket
