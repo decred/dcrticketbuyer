@@ -439,10 +439,11 @@ func (t *ticketPurchaser) purchase(height int64) error {
 		// at this difficulty.
 		curPrice := nextStakeDiff
 		couldBuy := math.Floor(balSpendable.ToCoin() / nextStakeDiff.ToCoin())
-		diffPeriod := int64(0)
+
 		// Calculate the remaining tickets that could possibly be
 		// mined in the current window. If couldBuy is greater than
 		// possible amount than reduce to that amount
+		diffPeriod := int64(0)
 		if (height+1)%winSize != 0 {
 			// In the middle of a window
 			diffPeriod = int64(t.idxDiffPeriod)
@@ -456,6 +457,7 @@ func (t *ticketPurchaser) purchase(height int64) error {
 				ticketsLeftInWindow, couldBuy, ticketsLeftInWindow)
 			couldBuy = float64(ticketsLeftInWindow)
 		}
+
 		// Override the target price being the average price if
 		// the user has elected to attempt to modify the ticket
 		// price.
