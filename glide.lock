@@ -1,5 +1,5 @@
 hash: 197aca5d37017e0b4e7d39430c5e01f95a85c47cc95ea10bc8bee40fafe211e4
-updated: 2016-08-29T14:10:43.408430312-04:00
+updated: 2016-10-05T20:23:38.026842249Z
 imports:
 - name: github.com/btcsuite/btclog
   version: 73889fb79bd687870312b6e40effcecffbd57d30
@@ -22,16 +22,16 @@ imports:
 - name: github.com/decred/dcrd
   version: 4c838e82b5110af8b69b34a81e2cbc224e5888fa
   subpackages:
+  - chaincfg/chainhash
+  - dcrjson
+  - wire
   - chaincfg
   - chaincfg/chainec
-  - chaincfg/chainhash
   - dcrec/edwards
   - dcrec/secp256k1
   - dcrec/secp256k1/schnorr
-  - dcrjson
-  - wire
 - name: github.com/decred/dcrrpcclient
-  version: 0f562bb540de12dfd5248aee87063eaa4792705f
+  version: 103ed11be3a7035554d3925fbfaa67742641510f
 - name: github.com/decred/dcrutil
   version: 0484582bf5503574d824f110e836a8c48aa60c8c
   subpackages:
@@ -46,4 +46,4 @@ imports:
   - edwards25519
 - name: github.com/jessevdk/go-flags
   version: 1679536dcc895411a9f5848d9a0250be7856448c
-testImports: []
+devImports: []
