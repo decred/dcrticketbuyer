@@ -20,7 +20,7 @@ imports:
 - name: github.com/decred/blake256
   version: a840e32d7c31fe2e0218607334cb120a683951a4
 - name: github.com/decred/dcrd
-  version: 99b7aadb855d0b964e73054cedcc2bc1d0be208e
+  version: 4c838e82b5110af8b69b34a81e2cbc224e5888fa
   subpackages:
   - chaincfg
   - chaincfg/chainec
@@ -31,13 +31,13 @@ imports:
   - dcrjson
   - wire
 - name: github.com/decred/dcrrpcclient
-  version: 103ed11be3a7035554d3925fbfaa67742641510f
+  version: 0f562bb540de12dfd5248aee87063eaa4792705f
 - name: github.com/decred/dcrutil
-  version: 4fc91a08eea88e74539d42d6301fd298b9bd8230
+  version: 0484582bf5503574d824f110e836a8c48aa60c8c
   subpackages:
   - base58
 - name: github.com/decred/dcrwallet
-  version: 59f8489eaf540d3ab4b3c70185b997349205bcdc
+  version: 26387c77284efc75ffe51ab01383e2514b6cbd35
   subpackages:
   - netparams
 - name: github.com/decred/ed25519
