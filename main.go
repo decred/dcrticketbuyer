@@ -99,6 +99,7 @@ func main() {
 			var blockHeader wire.BlockHeader
 			err := blockHeader.Deserialize(bytes.NewReader(serializedBlockHeader))
 			if err != nil {
+				log.Errorf("Failed to deserialize block header: %v", err.Error())
 				return
 			}
 			connectChan <- int64(blockHeader.Height)
