@@ -93,6 +93,7 @@ func main() {
 	// Connect to dcrd RPC server using websockets. Set up the
 	// notification handler to deliver blocks through a channel.
 	connectChan := make(chan int64, blockConnChanBuffer)
+	balanceChan := make(chan struct{})
 	quit := make(chan struct{})
 	ntfnHandlersDaemon := dcrrpcclient.NotificationHandlers{
 		OnBlockConnected: func(serializedBlockHeader []byte, transactions [][]byte) {
@@ -159,7 +160,13 @@ func main() {
 	log.Debugf("Attempting to connect to dcrwallet RPC %s as user %s "+
 		"using certificate located in %s",
 		cfg.DcrwServ, cfg.DcrwUser, cfg.DcrwCert)
-	dcrwClient, err := dcrrpcclient.New(connCfgWallet, nil)
+	walletNtfnHandlersDaemon := dcrrpcclient.NotificationHandlers{
+		OnAccountBalance: func(account string, balance dcrutil.Amount, confirmed bool) {
+			log.Debugf("account balance updated: %v %v %v", account, balance, confirmed)
+			balanceChan <- struct{}{}
+		},
+	}
+	dcrwClient, err := dcrrpcclient.New(connCfgWallet, &walletNtfnHandlersDaemon)
 	if err != nil {
 		fmt.Printf("Failed to start dcrw rpcclient: %s\n", err.Error())
 		os.Exit(1)
@@ -200,8 +207,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	wsm := newPurchaseManager(purchaser, connectChan, quit)
-	go wsm.blockConnectedHandler()
+	wsm := newPurchaseManager(purchaser, connectChan, balanceChan, quit)
+	go wsm.purchaseHandler()
 
 	log.Infof("Daemon and wallet successfully connected, beginning " +
 		"to purchase tickets")
