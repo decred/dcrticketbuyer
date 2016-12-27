@@ -9,10 +9,12 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"strconv"
 	"sync/atomic"
+	"time"
 
 	"github.com/decred/dcrrpcclient"
 	"github.com/decred/dcrutil"
@@ -42,6 +44,9 @@ var (
 	// ticket pool price and the ticket VWAP should be used as the
 	// price target.
 	useDualPriceStr = "dual"
+
+	// used for buydistrition
+	useSpreadDistribution = "spread"
 )
 
 // purchaseManager is the main handler of websocket notifications to
@@ -328,6 +333,8 @@ func (t *ticketPurchaser) purchase(height int64) error {
 		fillTicketQueue = true
 	}
 
+	log.Debugf("Blocks remaining in this diff period: %v", int(winSize)-t.idxDiffPeriod)
+
 	// Parse the ticket purchase frequency. Positive numbers mean
 	// that many tickets per block. Negative numbers mean to only
 	// purchase one ticket once every abs(num) blocks.
@@ -591,11 +598,36 @@ func (t *ticketPurchaser) purchase(height int64) error {
 		"this was scaled to %v", chainFee, feeToUse)
 	csvData.tfOwn = feeToUse
 
+	toBuyForBlock := t.toBuyDiffPeriod - t.purchasedDiffPeriod
+
+	if t.cfg.BuyDistribution == useSpreadDistribution {
+		log.Debugf("Spreading purchases throughout window")
+		buyOpportunities := int(winSize) - 1 - t.idxDiffPeriod
+		leftToBuy := t.toBuyDiffPeriod - t.purchasedDiffPeriod
+		if buyOpportunities > 0 && leftToBuy > 0 {
+			rand.Seed(time.Now().UTC().UnixNano())
+			log.Debugf("Need to buy %f per block to use all available funds", float64(leftToBuy)/float64(buyOpportunities))
+			if leftToBuy >= buyOpportunities {
+				toBuyForBlock = int(math.Floor(float64(leftToBuy) / float64(buyOpportunities)))
+				if rand.Float64() >= float64(leftToBuy%buyOpportunities)/float64(buyOpportunities) {
+					toBuyForBlock = toBuyForBlock + 1
+				}
+			} else {
+				if rand.Float64() >= float64(leftToBuy%buyOpportunities)/float64(buyOpportunities) {
+					toBuyForBlock = 1
+				} else {
+					toBuyForBlock = 0
+					log.Debugf("Skipping this round")
+				}
+			}
+		}
+	}
+
 	// Only the maximum number of tickets at each block
 	// should be purchased, as specified by the user.
-	toBuyForBlock := t.toBuyDiffPeriod - t.purchasedDiffPeriod
 	if toBuyForBlock > maxPerBlock {
 		toBuyForBlock = maxPerBlock
+		log.Debugf("Limiting to %d purchases per block", maxPerBlock)
 	}
 
 	// Hijack the number to purchase for this block if we have minimum
