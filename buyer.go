@@ -506,7 +506,7 @@ func (t *ticketPurchaser) purchase(height int64) error {
 		} else {
 			// Below or equal to the average price. Buy as many
 			// tickets as possible.
-			t.toBuyDiffPeriod = int(float64(couldBuy))
+			t.toBuyDiffPeriod = int(float64(math.Floor((balSpendable.ToCoin()) / nextStakeDiff.ToCoin())))
 
 			log.Debugf("The stake difficulty %v was below the target penalty "+
 				"cutoff %v; %v many tickets have been queued for purchase",
