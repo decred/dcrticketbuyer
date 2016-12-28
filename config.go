@@ -65,7 +65,7 @@ var (
 	defaultBlocksToAvg        = 11
 	defaultFeeTargetScaling   = 1.05
 	defaultDontWaitForTickets = false
-	defaultMaxInMempool       = 0
+	defaultMaxInMempool       = 3
 	defaultExpiryDelta        = 16
 )
 
@@ -114,7 +114,7 @@ type config struct {
 	BlocksToAvg        int     `long:"blockstoavg" description:"Number of blocks to average for fees calculation (default: 11)"`
 	FeeTargetScaling   float64 `long:"feetargetscaling" description:"The amount above the mean fee in the previous blocks to purchase tickets with, proportional e.g. 1.05 = 105% (default: 1.05)"`
 	DontWaitForTickets bool    `long:"dontwaitfortickets" description:"Don't wait until your last round of tickets have entered the blockchain to attempt to purchase more"`
-	MaxInMempool       int     `long:"maxinmempool" description:"The maximum number of your tickets allowed in mempool before purchasing more tickets (default: 0)"`
+	MaxInMempool       int     `long:"maxinmempool" description:"The maximum number of your tickets allowed in mempool before purchasing more tickets (default: 3)"`
 	ExpiryDelta        int     `long:"expirydelta" description:"Number of blocks in the future before the ticket expires (default: 16)"`
 }
 
