@@ -67,6 +67,7 @@ var (
 	defaultDontWaitForTickets = false
 	defaultMaxInMempool       = 0
 	defaultExpiryDelta        = 16
+	defaultBuyDistribution    = "spread"
 )
 
 type config struct {
@@ -116,6 +117,7 @@ type config struct {
 	DontWaitForTickets bool    `long:"dontwaitfortickets" description:"Don't wait until your last round of tickets have entered the blockchain to attempt to purchase more"`
 	MaxInMempool       int     `long:"maxinmempool" description:"The maximum number of your tickets allowed in mempool before purchasing more tickets (default: 0)"`
 	ExpiryDelta        int     `long:"expirydelta" description:"Number of blocks in the future before the ticket expires (default: 16)"`
+	BuyDistribution    string  `long:"buydistribution" description:"How purchases should be distributed within window (default: spread)"`
 }
 
 // cleanAndExpandPath expands environement variables and leading ~ in the
@@ -255,6 +257,7 @@ func loadConfig() (*config, error) {
 		DontWaitForTickets: defaultDontWaitForTickets,
 		MaxInMempool:       defaultMaxInMempool,
 		ExpiryDelta:        defaultExpiryDelta,
+		BuyDistribution:    defaultBuyDistribution,
 	}
 
 	// A config file in the current directory takes precedence.
