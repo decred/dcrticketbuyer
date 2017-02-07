@@ -1,5 +1,7 @@
-dcrticketbuyer
+dcrticketbuyer - OBSOLETE
 ====
+
+# This package has been superseded by the built in ticketbuyer in dcrwallet
 
 [![Build Status](https://travis-ci.org/decred/dcrticketbuyer.png?branch=master)]
 (https://travis-ci.org/decred/dcrticketbuyer)
