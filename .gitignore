@@ -1,8 +1,0 @@
-dcrticketbuyer
-ticketbuyer.conf
-logs/simnet/*.*
-logs/testnet/*.*
-logs/mainnet/*.*
-webui/*.csv
-vendor
-*~
